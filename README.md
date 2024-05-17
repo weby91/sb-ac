@@ -1,49 +1,65 @@
 # Before you start
-### About the tasks and the descriptions
-A description of each task in this challenge is not very specific and strict. To be honest, we don't think we're providing perfect requirements.
+## About this challenge
+We prepared a very simple app but we need to improve it. Please help us!
 
-### Time
+### Descriptions and the purpose
+The specifications & requirements you'll see below can be too strict.
+
+The reason is that we would like to see your understandings, skills, and experiences by the tasks.
+
+### You can ignore the description 👍
+If you already have the knowledge and you have other effective, efficient, or creative idea, it's more than welcome!
+
+In that case, let's ignore the descriptions, and implement in that way.  Then, let us discuss it in the interview 🙌
+
+## Time
 **We don't set the time limitation**. You can take your time. Please take it easy ✌🏻
 
-But at the same time, we don't wouldn't like you to spend a lot of time because we don't want to consume your valuable time.
-
-Optional requirements are optional, literally.  Please do them only if you can spend more time.
-
-# Tasks - Fact app
-This app shows a fact via [fact free api](https://catfact.ninja/fact).
+# Fact app
+This app shows a cat fact from [fact free api](https://catfact.ninja/#/).  
 
 ![Screenshot](./fact_app.png)
 
-## Current situation
-The existing project works, but does not satisfy some requirements.
-Please implement them!
+It works, but does not satisfy **[Specifications](#specifications)** below, so please implement them!
 
-If you have time after finishing [Requirements](#requirements), please check & try [Optional](#optional).
+If you still have a time after that, please check & try *[Optional](#optional)*.
 
-### Requirements
-- Please write it in Kotlin and use Jetpack Compose for UI.
-- Use coroutines and flow.
-- Structure the project using MVVM, Clean architecture and Modularization in mind.
-  - Please at least one more module other than app module.
-- Store local data using [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore) or Room.
-- Add dependency injection by Hilt.
-- Add some Unit and UI tests depending on your code as necessary.
-- The design in the screenshot is an example only. Please design it considering android best practices, material design and screen sizes.
-- Keep the code highly comprehensible, for example by adding comments.
-- If you have better idea (more effective, efficient, creative etc), it's  more than welcome, so let's ignore the descriptions and implement in your way 👍
+## Specifications
 
-### Optional
-If you have time and want to do more, please
+### Screens (features)
+#### Home screen (Existing)
+- Save the latest cat fact to local storage, and show it when a user relaunches the app.
+- Show the (character) `length` of a fact **only when the length is greater than 100**.
+  - `length` is contained in the `fact` response data.
+  - The place to show the lenght is not specified. Anywhere is okay.
+- Show the text "**Multiple cats!**" when the fact contains the word cats.
+  - No context check is required. Simply finding the word `cats` is fine
+#### New screen
+- Add 1 more screen which you think is good to have
+- Any content is fine. Here are some examples
+  - Fact history (show the fact list the user has seen)
+  - Fact search (search cat fact(s) by keyword, length, etc)
+
+### Other requirements
+Sorry to limit the freedom, but please check below as well 🙏
+
+- Kotlin with Coroutine & Flow
+- Jetpack Compose for UI
+- Dependency injection (library is not specified)
+- Unit and UI tests
+
+## Optional
+### Screens or features
 - (Design) Add the `Top app bar` and update the design as you want 🏰
-- (Testing) Add [JUnit5](https://github.com/mannodermaus/android-junit5) and `fake` or `mockk`
+- (Future growth) Add a `New feature or tool` which you think is better to have 💪
+
+### Other requirements
+- (Testing) Use [JUnit5](https://github.com/mannodermaus/android-junit5) and add `fake` or `mockk`
 - (Gradle) Add a `version catalog` 📗
 - (Future growth) `Modularize` the app ✌🏻
 - (Future growth) Add `Domain layer` 🚴‍️
 
-## To submit your solution
-Please
-- Fork this repo ⑂
-- Create a pull request in your own repo 📝
-  - ❌ Please do not create one in this repo
+# How to submit?
+Please 
+- Create a new public repository under your GitHub account 
 - Send your the pull request's link to us 🙏
-  - We would like to leave some comments for the next step
