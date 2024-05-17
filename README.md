@@ -5,15 +5,15 @@ We prepared a very simple app but we need to improve it. Please help us!
 ### Descriptions and the purpose
 The specifications & requirements you'll see below can be too strict.
 
-The reason is that we would like to see your understandings, skills, and experiences by the tasks.
+The reason is that we would like to see your understanding, skills, and experiences by the tasks.
 
 ### You can ignore the description 👍
-If you already have the knowledge and you have other effective, efficient, or creative idea, it's more than welcome!
+If you already have the knowledge and you have other effective, efficient, or creative ideas, it's more than welcome!
 
 In that case, let's ignore the descriptions, and implement in that way.  Then, let us discuss it in the interview 🙌
 
 ## Time
-**We don't set the time limitation**. You can take your time. Please take it easy ✌🏻
+**We don't set a specific duration**. You can take your time. Please take it easy ✌🏻
 
 # Fact app
 This app shows a cat fact from [fact free api](https://catfact.ninja/#/).  
@@ -22,7 +22,7 @@ This app shows a cat fact from [fact free api](https://catfact.ninja/#/).
 
 It works, but does not satisfy **[Specifications](#specifications)** below, so please implement them!
 
-If you still have a time after that, please check & try *[Optional](#optional)*.
+If you still have time after that, please check & try *[Optional](#optional)*.
 
 ## Specifications
 
@@ -31,7 +31,7 @@ If you still have a time after that, please check & try *[Optional](#optional)*.
 - Save the latest cat fact to local storage, and show it when a user relaunches the app.
 - Show the (character) `length` of a fact **only when the length is greater than 100**.
   - `length` is contained in the `fact` response data.
-  - The place to show the lenght is not specified. Anywhere is okay.
+  - The place to show the length is not specified. Anywhere is okay.
 - Show the text "**Multiple cats!**" when the fact contains the word cats.
   - No context check is required. Simply finding the word `cats` is fine
 #### New screen
