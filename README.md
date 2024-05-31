@@ -56,21 +56,21 @@ If you still have time after that, please check & try *[Optional](#optional)*.
 ## Methodology
 Below is our standard approach from Job Description, sharing for your reference 🙏/
 - MVVM
-- `Room` and/or `DataStore` for local data
-- Dependency injection (Hilt)
-- `Medularization`
-- Material Design
+- [Room](https://developer.android.com/training/data-storage/room) and/or [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for local data
+- Dependency injection ([Hilt](https://developer.android.com/training/dependency-injection/hilt-android))
+- [Medularization](https://developer.android.com/topic/modularization)
+- [Material Design](https://m3.material.io/)
 
 ## Optional
 ### UI and features
-- (Design) Add the `Top app bar` and update the design as you want 🏰
-- (Future growth) Add a `New feature or tool` which you think is better to have 💪
+- (Design) Add the `Top app bar` and update the design of other components as you want 🏰
+- (Future growth) Add another `New feature or tool` which you think is better to have 💪
 
 ### Bonus (even more)
 - (Testing) Use [JUnit5](https://github.com/mannodermaus/android-junit5) and add `fake` or `mockk`
-- (Testing) UI tests
-- (Gradle) Add a `version catalog` 📗
-- (For future growth) Add `Domain layer` 🚴‍️
+- (Testing) UI tests ✅
+- (Gradle) Migrate to [version catalogs](https://developer.android.com/build/migrate-to-catalogs) 📗
+- (Future growth) Add `Domain layer` 🚴‍️
 
 # How to submit?
 Please 
