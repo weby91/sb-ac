@@ -54,11 +54,11 @@ If you still have time after that, please check & try *[Optional](#optional)*.
   - You can decide which components or logic should be tested
 
 ## Methodology
-Below is our standard approach from Job Description, sharing for your reference 🙏/
+Below is our standard approach from Job Description, sharing for your reference 🙏
 - MVVM
 - [Room](https://developer.android.com/training/data-storage/room) and/or [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for local data
 - Dependency injection ([Hilt](https://developer.android.com/training/dependency-injection/hilt-android))
-- [Medularization](https://developer.android.com/topic/modularization)
+- [Modularization](https://developer.android.com/topic/modularization)
 - [Material Design](https://m3.material.io/)
 
 ## Optional
