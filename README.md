@@ -74,6 +74,11 @@ Below is our standard approach from Job Description, sharing for your reference 
 
 # How to submit?
 Please 
-- Create a new public repository **under your own GitHub account**
+- Click **Use this template** button on the top right of this page
+- Click **Create a new repository** item from the drop-down list
+- Create a new repository under your own GitHub account
 - Create a pull request there
-- Send the link of the pull request to us 🙏
+- Send us
+  - the pull request's link if your new repository is **public**
+  - an invitation if your new repository is **private**
+    - Please ask our HR team for our account info in that case  
