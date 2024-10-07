@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">エジソンアンドロイド演習</string>
+    <string name="fact_title">ファクト</string>
+    <string name="fact_length">長さ: %d</string>
+    <string name="multiple_cats">複数の猫！</string>
+    <string name="update_fact">ファクトを更新</string>
+</resources>
