@@ -12,7 +12,6 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
-import jp.speakbuddy.edisonandroidexercise.domain.use_case.SubmitAnswerUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
 import jp.speakbuddy.edisonandroidexercise.presentation.commons.TheResult
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +38,6 @@ class FactViewModelTest {
     private lateinit var translateUseCase: TranslateUseCase
     private lateinit var getSavedFactsUseCase: GetSavedFactsUseCase
     private lateinit var getQuizUseCase: GetQuizUseCase
-    private lateinit var submitAnswerUseCase: SubmitAnswerUseCase
     private lateinit var getLatestFactUseCase: GetLatestFactUseCase
 
     private val testDispatcher = StandardTestDispatcher()
@@ -53,7 +51,6 @@ class FactViewModelTest {
         translateUseCase = mockk()
         getSavedFactsUseCase = mockk()
         getQuizUseCase = mockk()
-        submitAnswerUseCase = mockk()
         getLatestFactUseCase = mockk()
 
         viewModel = FactViewModel(
@@ -62,7 +59,6 @@ class FactViewModelTest {
             translateUseCase,
             getSavedFactsUseCase,
             getQuizUseCase,
-            submitAnswerUseCase,
             getLatestFactUseCase,
             testDispatcher
         )
@@ -221,7 +217,7 @@ class FactViewModelTest {
     @Test
     fun `getQuiz should update quizState with new quiz`() = runTest {
         val fact = "Test fact"
-        val quiz = Quiz(listOf("Option 1", "Option 2"), "Question")
+        val quiz = Quiz(listOf("Option 1", "Option 2"), "Question", "a")
 
         coEvery { getQuizUseCase(fact) } returns quiz
 
@@ -232,23 +228,6 @@ class FactViewModelTest {
             val result = awaitItem()
             assertTrue(result is TheResult.Success)
             assertEquals(quiz, (result as TheResult.Success).data)
-        }
-    }
-
-    @Test
-    fun `submitAnswer should update submitAnswerResult`() = runTest {
-        val fact = "Test fact"
-        val question = "Test question"
-        val options = listOf("Option 1", "Option 2")
-        val userAnswer = "Option 1"
-        val expectedResult = "Correct!"
-
-        coEvery { submitAnswerUseCase(fact, question, options, userAnswer) } returns expectedResult
-
-        viewModel.submitAnswer(fact, question, options, userAnswer)
-
-        viewModel.submitAnswerResult.test {
-            assertEquals(expectedResult, awaitItem())
         }
     }
 
@@ -270,17 +249,5 @@ class FactViewModelTest {
             assertEquals("ja", (result as TheResult.Success).data.targetLanguage)
             assertEquals(translation.translatedText, result.data.translationText)
         }
-    }
-
-    @Test
-    fun `isAnswerCorrect should return true for correct answer`() {
-        assertTrue(viewModel.isAnswerCorrect("Correct! Great job!"))
-        assertTrue(viewModel.isAnswerCorrect("That's correct."))
-    }
-
-    @Test
-    fun `isAnswerCorrect should return false for incorrect answer`() {
-        assertFalse(viewModel.isAnswerCorrect("Incorrect. Try again."))
-        assertFalse(viewModel.isAnswerCorrect("Sorry, that's not correct."))
     }
 }

@@ -16,7 +16,6 @@ import jp.speakbuddy.edisonandroidexercise.data.remote.TranslationApi
 import jp.speakbuddy.edisonandroidexercise.data.repository.FactRepositoryImpl
 import jp.speakbuddy.edisonandroidexercise.data.repository.QuizRepositoryImpl
 import jp.speakbuddy.edisonandroidexercise.data.repository.TranslationRepositoryImpl
-import jp.speakbuddy.edisonandroidexercise.domain.model.Quiz
 import jp.speakbuddy.edisonandroidexercise.domain.repository.FactRepository
 import jp.speakbuddy.edisonandroidexercise.domain.repository.QuizRepository
 import jp.speakbuddy.edisonandroidexercise.domain.repository.TranslationRepository
@@ -25,7 +24,6 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
-import jp.speakbuddy.edisonandroidexercise.domain.use_case.SubmitAnswerUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -137,12 +135,6 @@ object AppModule {
     @Singleton
     fun provideGetQuizUseCase(repository: QuizRepository): GetQuizUseCase {
         return GetQuizUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSubmitAnswerUseCase(repository: QuizRepository): SubmitAnswerUseCase {
-        return SubmitAnswerUseCase(repository)
     }
 
     @Provides

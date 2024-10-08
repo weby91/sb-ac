@@ -12,7 +12,6 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
-import jp.speakbuddy.edisonandroidexercise.domain.use_case.SubmitAnswerUseCase
 import jp.speakbuddy.edisonandroidexercise.presentation.commons.TheResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +29,6 @@ class FactViewModel @Inject constructor(
     private val translateUseCase: TranslateUseCase,
     private val getSavedFactsUseCase: GetSavedFactsUseCase,
     private val getQuizUseCase: GetQuizUseCase,
-    private val submitAnswerUseCase: SubmitAnswerUseCase,
     private val getLatestFactUseCase: GetLatestFactUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
@@ -180,29 +178,6 @@ class FactViewModel @Inject constructor(
                 _quizState.value = TheResult.Error("Failed to fetch quiz: ${e.message}")
             }
         }
-    }
-
-    private val _submitAnswerResult = MutableStateFlow<String?>(null)
-    val submitAnswerResult: StateFlow<String?> = _submitAnswerResult.asStateFlow()
-
-    fun submitAnswer(fact: String, question: String, options: List<String>, userAnswer: String) {
-        viewModelScope.launch {
-            try {
-                val result = submitAnswerUseCase(fact, question, options, userAnswer)
-                _submitAnswerResult.value = result
-            } catch (e: Exception) {
-                // Handle error
-                _submitAnswerResult.value = "Error: ${e.message}"
-            }
-        }
-    }
-
-    fun isAnswerCorrect(result: String): Boolean {
-        return result.lowercase().contains("correct")
-    }
-
-    fun resetSubmitAnswerResult() {
-        _submitAnswerResult.value = null
     }
 }
 
