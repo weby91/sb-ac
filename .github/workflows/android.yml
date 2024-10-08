@@ -32,8 +32,8 @@ jobs:
     - name: Run Lint
       run: ./gradlew lint
 
-    - name: Run Unit Tests
-      run: ./gradlew test
+    - name: Run Unit Tests with Coverage
+      run: ./gradlew testDebugUnitTest jacocoTestReport
 
     - name: Upload Lint Results
       uses: actions/upload-artifact@v3
@@ -48,3 +48,18 @@ jobs:
       with:
         name: test-results
         path: app/build/reports/tests/testDebugUnitTest/
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: app/build/reports/jacoco/jacocoTestReport/html/
+
+    - name: Check Coverage for FactViewModel
+      run: |
+        COVERAGE=$(grep -A 4 "jp/speakbuddy/edisonandroidexercise/presentation/fact/FactViewModel" app/build/reports/jacoco/jacocoTestReport/html/index.html | grep -oP '(?<=<td class="ctr2">)[^<]*' | head -n 1)
+        echo "Coverage for FactViewModel: $COVERAGE"
+        if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+          echo "Coverage is below 80%. Failing the build."
+          exit 1
+        fi

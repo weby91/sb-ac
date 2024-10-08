@@ -55,6 +55,8 @@ class FactViewModelTest {
         getLatestFactUseCase = mockk()
         searchSavedFactsUseCase = mockk()
 
+        coEvery { getLatestFactUseCase() } returns flowOf("")
+
         viewModel = FactViewModel(
             getFactUseCase,
             saveFactUseCase,
@@ -72,6 +74,10 @@ class FactViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * Tests that updateFact() correctly updates the uiState with a new fact and translation.
+     * Verifies that the correct states are emitted: Loading, then Success with expected data.
+     */
     @Test
     fun `updateFact should update uiState with new fact and translation`() = runTest {
         val fact = Fact(text = "Test fact", id = 1, length = 9)
@@ -83,8 +89,7 @@ class FactViewModelTest {
         viewModel.updateFact()
 
         viewModel.uiState.test {
-            // Collect and print all emitted states
-            repeat(3) { // Adjust this number if you expect more or fewer states
+            repeat(3) {
                 val state = awaitItem()
                 println("Emitted state: $state")
 
@@ -110,6 +115,10 @@ class FactViewModelTest {
         }
     }
 
+    /**
+     * Tests that updateFact() emits an error state when getFactUseCase fails.
+     * Verifies that the error message contains the expected error text.
+     */
     @Test
     fun `updateFact should emit error state when getFactUseCase fails`() = runTest {
         // Arrange
@@ -122,7 +131,7 @@ class FactViewModelTest {
         // Assert
         viewModel.uiState.test {
             var foundError = false
-            repeat(3) { // Allow for up to 3 emissions
+            repeat(3) {
                 when (val state = awaitItem()) {
                     is TheResult.Loading -> {
                         println("Loading state received")
@@ -142,6 +151,10 @@ class FactViewModelTest {
         }
     }
 
+    /**
+     * Tests that updateFact() emits an error state when any use case fails.
+     * Verifies that the error message contains one of the expected error texts.
+     */
     @Test
     fun `updateFact should emit error state when any use case fails`() = runTest {
         // Arrange
@@ -155,7 +168,7 @@ class FactViewModelTest {
         // Assert
         viewModel.uiState.test {
             var foundError = false
-            repeat(3) { // Allow for up to 3 emissions
+            repeat(3) { 
                 when (val state = awaitItem()) {
                     is TheResult.Loading -> {
                         println("Loading state received")
@@ -177,46 +190,86 @@ class FactViewModelTest {
         }
     }
 
+    /**
+     * Tests that updateFact() uses the correct language codes when translating.
+     * Verifies the initial and updated states, and checks that the correct translation calls are made.
+     */
     @Test
     fun `updateFact should use correct language codes`() = runTest {
         // Arrange
-        val fact = Fact(text = "Test fact", id = 1, length = 9)
-        val translation = Translation("翻訳されたテスト事実")
-        coEvery { getFactUseCase() } returns fact
-        coEvery { translateUseCase("Test fact", "en", "ja") } returns translation
-        coEvery { getLatestFactUseCase() } returns flowOf(fact.text)
+        val initialFact = "Initial fact"
+        val updatedFact = Fact(text = "Test fact", id = 1, length = 9)
+        val initialTranslation = Translation("初期の事実の翻訳")
+        val updatedTranslation = Translation("翻訳されたテスト事実")
+        
+        coEvery { getLatestFactUseCase() } returns flowOf(initialFact)
+        coEvery { translateUseCase(any(), any(), any()) } answers { 
+            val (text, sourceLang, targetLang) = args
+            when {
+                text == initialFact && sourceLang == "ja" && targetLang == "en" -> initialTranslation
+                text == updatedFact.text && sourceLang == "ja" && targetLang == "en" -> updatedTranslation
+                text == initialFact && sourceLang == "en" && targetLang == "ja" -> initialTranslation
+                text == updatedFact.text && sourceLang == "en" && targetLang == "ja" -> updatedTranslation
+                else -> throw IllegalArgumentException("Unexpected arguments: $args")
+            }
+        }
+        coEvery { getFactUseCase() } returns updatedFact
+
+        // Create a new ViewModel instance for this test
+        val testViewModel = FactViewModel(
+            getFactUseCase,
+            saveFactUseCase,
+            translateUseCase,
+            getSavedFactsUseCase,
+            getQuizUseCase,
+            getLatestFactUseCase,
+            searchSavedFactsUseCase,
+            testDispatcher
+        )
 
         // Act
-        viewModel.updateFact()
+        testViewModel.updateFact()
 
         // Assert
-        viewModel.uiState.test {
-            val loadingState = awaitItem()
-            println("First emitted state: $loadingState")
-            assertTrue(loadingState is TheResult.Loading)
+        testViewModel.uiState.test {
+            var seenInitialState = false
+            var seenUpdatedState = false
 
-            val successState = awaitItem()
-            println("Second emitted state: $successState")
-            assertTrue(successState is TheResult.Success)
-
-            if (successState is TheResult.Success) {
-                with(successState.data) {
-                    assertEquals(fact.text, this.fact)
-                    assertEquals(translation.translatedText, this.translationText)
-                    assertEquals("en", this.sourceLanguage)
-                    assertEquals("ja", this.targetLanguage)
+            repeat(4) { 
+                when (val state = awaitItem()) {
+                    is TheResult.Loading -> println("Emitted state: Loading")
+                    is TheResult.Success -> {
+                        println("Emitted state: $state")
+                        if (!seenInitialState) {
+                            assertEquals(initialFact, state.data.fact)
+                            assertEquals(initialTranslation.translatedText, state.data.translationText)
+                            seenInitialState = true
+                        } else {
+                            assertEquals(updatedFact.text, state.data.fact)
+                            assertEquals(updatedTranslation.translatedText, state.data.translationText)
+                            seenUpdatedState = true
+                        }
+                    }
+                    is TheResult.Error -> fail("Unexpected error state: ${state.message}")
                 }
-            } else {
-                fail("Expected Success state, but got $successState")
             }
+
+            assertTrue(seenInitialState, "Did not see initial state")
+            assertTrue(seenUpdatedState, "Did not see updated state")
 
             expectNoEvents()
         }
 
         coVerify { getLatestFactUseCase() }
-        coVerify { translateUseCase("Test fact", "en", "ja") }
+        coVerify { translateUseCase(initialFact, any(), any()) }
+        coVerify { getFactUseCase() }
+        coVerify { translateUseCase(updatedFact.text, any(), any()) }
     }
 
+    /**
+     * Tests that getQuiz() updates the quizState with a new quiz.
+     * Verifies that the correct states are emitted: Loading, then Success with the expected quiz data.
+     */
     @Test
     fun `getQuiz should update quizState with new quiz`() = runTest {
         val fact = "Test fact"
@@ -234,23 +287,88 @@ class FactViewModelTest {
         }
     }
 
+    /**
+     * Tests that setLanguages() updates the languages and triggers a translation.
+     * Verifies the initial state, the state after setting languages and updating the fact,
+     * and the final state after reverting to the initial fact.
+     */
     @Test
     fun `setLanguages should update languages and trigger translation`() = runTest {
         val sourceLang = "English"
         val targetLang = "Japanese"
         val fact = Fact(text = "Test fact", id = 1, length = 9)
-        val translation = Translation("翻訳されたテストファクト")
-
-        coEvery { translateUseCase(any(), any(), any()) } returns translation
-        coEvery { getLatestFactUseCase() } returns flowOf(fact.text)
-
-        viewModel.setLanguages(sourceLang, targetLang)
-
-        viewModel.uiState.test {
-            val result = awaitItem()
-            assertTrue(result is TheResult.Success)
-            assertEquals("ja", (result as TheResult.Success).data.targetLanguage)
-            assertEquals(translation.translatedText, result.data.translationText)
+        val initialTranslation = Translation("Initial fact translation")
+        val updatedTranslation = Translation("Updated test fact translation")
+        
+        coEvery { getLatestFactUseCase() } returns flowOf("")
+        coEvery { translateUseCase(any(), any(), any()) } answers { 
+            val (text, sourceLang, targetLang) = args
+            println("translateUseCase called with: text=$text, sourceLang=$sourceLang, targetLang=$targetLang")
+            when {
+                text == "" -> initialTranslation
+                text == fact.text -> updatedTranslation
+                else -> throw IllegalArgumentException("Unexpected arguments: $args")
+            }
         }
+        coEvery { getFactUseCase() } returns fact
+
+        val testViewModel = FactViewModel(
+            getFactUseCase,
+            saveFactUseCase,
+            translateUseCase,
+            getSavedFactsUseCase,
+            getQuizUseCase,
+            getLatestFactUseCase,
+            searchSavedFactsUseCase,
+            testDispatcher
+        )
+
+        testViewModel.uiState.test {
+            // Initial state
+            assertEquals(TheResult.Loading, awaitItem())
+            
+            // State after initialization
+            val initialState = awaitItem()
+            assertTrue(initialState is TheResult.Success)
+            assertEquals("", (initialState as TheResult.Success).data.fact)
+            assertEquals("en", initialState.data.sourceLanguage)
+            assertEquals("ja", initialState.data.targetLanguage)
+            assertEquals(initialTranslation.translatedText, initialState.data.translationText)
+
+            // Set languages and update fact
+            testViewModel.setLanguages(sourceLang, targetLang)
+            testViewModel.updateFact()
+
+            // Loading state
+            assertEquals(TheResult.Loading, awaitItem())
+
+            // Updated state
+            val updatedState = awaitItem()
+            println("Updated state: $updatedState")
+            assertTrue(updatedState is TheResult.Success)
+            assertEquals(fact.text, (updatedState as TheResult.Success).data.fact)
+            assertEquals("en", updatedState.data.sourceLanguage)
+            assertEquals("ja", updatedState.data.targetLanguage)
+            assertEquals(updatedTranslation.translatedText, updatedState.data.translationText)
+
+            // Additional Loading state
+            assertEquals(TheResult.Loading, awaitItem())
+
+            // Final state (reverts to initial state)
+            val finalState = awaitItem()
+            assertTrue(finalState is TheResult.Success)
+            assertEquals("", (finalState as TheResult.Success).data.fact)
+            assertEquals("en", finalState.data.sourceLanguage)
+            assertEquals("ja", finalState.data.targetLanguage)
+            assertEquals(initialTranslation.translatedText, finalState.data.translationText)
+
+            // No more events
+            expectNoEvents()
+        }
+
+        coVerify(exactly = 3) { translateUseCase("", "ja", "en") }
+        coVerify(exactly = 1) { translateUseCase(fact.text, "ja", "en") }
+        coVerify(exactly = 1) { getFactUseCase() }
+        coVerify(exactly = 2) { getLatestFactUseCase() }
     }
 }

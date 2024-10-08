@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.protobuf")
     id("com.google.dagger.hilt.android")
+    id("jacoco")
 }
 
 android {
@@ -24,6 +25,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -107,10 +111,14 @@ dependencies {
 
     // Turbine for testing Flows
     testImplementation("app.cash.turbine:turbine:1.0.0")
+
+    testImplementation("org.jacoco:org.jacoco.core:0.8.11")
+
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.named("jacocoTestReport"))
 }
 
 // Setup protobuf configuration, generating lite Java and Kotlin classes
@@ -134,4 +142,55 @@ protobuf {
 
 kapt {
     correctErrorTypes = true
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.withType<Test>())
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    classDirectories.setFrom(
+        fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+            exclude(
+                "**/R.class",
+                "**/R$*.class",
+                "**/BuildConfig.*",
+                "**/Manifest*.*",
+                "**/*Test*.*",
+                "android/**/*.*"
+            )
+        }
+    )
+
+    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
+    executionData.setFrom(file("${buildDir}/jacoco/testDebugUnitTest.exec"))
+}
+
+tasks.register("jacocoTestReportForFactViewModel") {
+    dependsOn("jacocoTestReport")
+    doLast {
+        val reportFile = file("${buildDir}/reports/jacoco/jacocoTestReport/html/index.html")
+        if (reportFile.exists()) {
+            val content = reportFile.readText()
+            val regex = """jp/speakbuddy/edisonandroidexercise/presentation/fact/FactViewModel.*?<td class="ctr2">(\d+)%""".toRegex(RegexOption.DOT_MATCHES_ALL)
+            val matchResult = regex.find(content)
+            val coverage = matchResult?.groupValues?.get(1)?.toIntOrNull()
+            if (coverage != null) {
+                println("Coverage for FactViewModel: $coverage%")
+                if (coverage < 80) {
+                    throw GradleException("Coverage for FactViewModel is below 80%. Actual: $coverage%")
+                }
+            } else {
+                println("Could not find coverage for FactViewModel")
+            }
+        } else {
+            println("JaCoCo report file not found")
+        }
+    }
 }
