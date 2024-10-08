@@ -5,6 +5,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -12,6 +13,13 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "edison_android_exercise"
+
+rootProject.name = "EdisonAndroidExercise"
 
 include(":app")
+include(":core")
+include(":data")
+include(":domain")
+include(":ui")
+include(":feature:fact")
+include(":testutils")

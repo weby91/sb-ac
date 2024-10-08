@@ -1,10 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    kotlin("kapt")
-    alias(libs.plugins.protobuf)
-    alias(libs.plugins.hilt)
-    id("jacoco")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -15,34 +13,27 @@ android {
         applicationId = "jp.speakbuddy.edisonandroidexercise"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0.0"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "jp.speakbuddy.edisonandroidexercise.HiltTestRunner"
-
         vectorDrawables {
             useSupportLibrary = true
         }
     }
 
     buildTypes {
-        debug {
-            enableUnitTestCoverage = true
-        }
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
@@ -55,12 +46,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
-    }
 }
 
 dependencies {
+    implementation(project(":feature:fact"))
+    implementation(project(":data"))
+    implementation(project(":core"))
+    implementation(project(":domain"))
+    implementation(project(":ui"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -69,7 +63,11 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(libs.ar.core)
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.room.common)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -77,126 +75,4 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
-    androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
-    androidTestImplementation(libs.androidx.arch.core.testing)
-
-    testImplementation(libs.kotlin.test.junit)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
-    implementation(libs.hilt.navigation.compose)
-
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-
-    // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-    implementation(libs.room.paging)
-
-    // Paging
-    implementation(libs.paging.compose)
-
-    // Coil
-    implementation(libs.coil)
-
-    // JUnit 5
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-
-    // MockK
-    testImplementation(libs.mockk)
-
-    // Kotlin Coroutines Test
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    // Turbine
-    testImplementation(libs.turbine)
-
-    testImplementation(libs.jacoco)
-
-    androidTestImplementation(libs.robolectric)
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    finalizedBy(tasks.named("jacocoTestReport"))
-}
-
-// Setup protobuf configuration, generating lite Java and Kotlin classes
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                create("java") {
-                    option("lite")
-                }
-                create("kotlin") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
-
-kapt {
-    correctErrorTypes = true
-}
-
-jacoco {
-    toolVersion = libs.versions.jacoco.get()
-}
-
-tasks.register<JacocoReport>("jacocoTestReport") {
-    dependsOn(tasks.withType<Test>())
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-
-    classDirectories.setFrom(
-        fileTree("${buildDir}/tmp/kotlin-classes/debug") {
-            exclude(
-                "**/R.class",
-                "**/R$*.class",
-                "**/BuildConfig.*",
-                "**/Manifest*.*",
-                "**/*Test*.*",
-                "android/**/*.*"
-            )
-        }
-    )
-
-    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
-    executionData.setFrom(file("${buildDir}/jacoco/testDebugUnitTest.exec"))
-}
-
-tasks.register("jacocoTestReportForFactViewModel") {
-    dependsOn("jacocoTestReport")
-    doLast {
-        val reportFile = file("${buildDir}/reports/jacoco/jacocoTestReport/html/index.html")
-        if (reportFile.exists()) {
-            val content = reportFile.readText()
-            val regex = """jp/speakbuddy/edisonandroidexercise/presentation/fact/FactViewModel.*?<td class="ctr2">(\d+)%""".toRegex(RegexOption.DOT_MATCHES_ALL)
-            val matchResult = regex.find(content)
-            val coverage = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            if (coverage != null) {
-                println("Coverage for FactViewModel: $coverage%")
-                if (coverage < 80) {
-                    throw GradleException("Coverage for FactViewModel is below 80%. Actual: $coverage%")
-                }
-            } else {
-                println("Could not find coverage for FactViewModel")
-            }
-        } else {
-            println("JaCoCo report file not found")
-        }
-    }
 }
