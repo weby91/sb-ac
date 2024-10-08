@@ -393,12 +393,10 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
     val quizState by viewModel.quizState.collectAsState()
     var selectedOption by remember { mutableStateOf<Int?>(null) }
     var showResult by remember { mutableStateOf(false) }
-    val submitAnswerResult by viewModel.submitAnswerResult.collectAsState()
+    var isCorrect by remember { mutableStateOf(false) }
 
     LaunchedEffect(fact) {
         viewModel.getQuiz(fact)
-        // Reset submitAnswerResult when a new quiz is loaded
-        viewModel.resetSubmitAnswerResult()
     }
 
     Card(
@@ -454,7 +452,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                         Button(
                             onClick = {
                                 selectedOption?.let { option ->
-                                    viewModel.submitAnswer(fact, quiz.question, quiz.options, quiz.options[option])
+                                    isCorrect = quiz.options[option] == quiz.answer
                                     showResult = true
                                 }
                             },
@@ -479,12 +477,10 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                         enter = expandVertically() + fadeIn(),
                         exit = shrinkVertically() + fadeOut()
                     ) {
-                        submitAnswerResult?.let { result ->
-                            ResultAnimation(isCorrect = viewModel.isAnswerCorrect(result)) {
-                                showResult = false
-                                selectedOption = null  // Reset selected option
-                                onQuizComplete()
-                            }
+                        ResultAnimation(isCorrect = isCorrect) {
+                            showResult = false
+                            selectedOption = null  // Reset selected option
+                            onQuizComplete()
                         }
                     }
                 }

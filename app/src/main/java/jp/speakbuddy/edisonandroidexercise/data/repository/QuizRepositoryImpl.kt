@@ -23,7 +23,7 @@ class QuizRepositoryImpl @Inject constructor(
      */
     override suspend fun getQuiz(content: String): Quiz {
         val response = api.getQuiz(QuizRequestDto(content))
-        return Quiz(options = response.options, question = response.question)
+        return Quiz(options = response.options, question = response.question, answer = response.answer)
     }
 
     /**
