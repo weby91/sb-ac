@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI/CD
 
 on:
   push:
@@ -61,3 +61,23 @@ jobs:
             echo "Coverage is below 80%. Failing the build."
             exit 1
           fi
+
+      - name: Build Release APK
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Upload to Firebase App Distribution
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: testers
+          file: app/build/outputs/apk/release/app-release-unsigned.apk

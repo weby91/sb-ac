@@ -1,11 +1,10 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.protobuf")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+    kotlin("kapt")
+    alias(libs.plugins.protobuf)
+    alias(libs.plugins.hilt)
     id("jacoco")
-    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -62,69 +61,65 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("com.google.ar:core:1.45.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
-    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
+    implementation(libs.ar.core)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.androidx.arch.core.testing)
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
-
+    testImplementation(libs.kotlin.test.junit)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
 
     // Room
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
-    // room paging
-    implementation("androidx.room:room-paging:$roomVersion")
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+    implementation(libs.room.paging)
 
-    // collectAsLazyPagingItems
-    implementation("androidx.paging:paging-compose:3.3.2")
+    // Paging
+    implementation(libs.paging.compose)
 
-    // async image
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    // Coil
+    implementation(libs.coil)
 
     // JUnit 5
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 
     // MockK
-    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation(libs.mockk)
 
     // Kotlin Coroutines Test
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation(libs.kotlinx.coroutines.test)
 
-    // Turbine for testing Flows
-    testImplementation("app.cash.turbine:turbine:1.0.0")
+    // Turbine
+    testImplementation(libs.turbine)
 
-    testImplementation("org.jacoco:org.jacoco.core:0.8.11")
+    testImplementation(libs.jacoco)
 
-
-    androidTestImplementation("org.robolectric:robolectric:4.9")
+    androidTestImplementation(libs.robolectric)
 }
 
 tasks.withType<Test> {
@@ -135,7 +130,7 @@ tasks.withType<Test> {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.7"
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -156,7 +151,7 @@ kapt {
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = libs.versions.jacoco.get()
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
