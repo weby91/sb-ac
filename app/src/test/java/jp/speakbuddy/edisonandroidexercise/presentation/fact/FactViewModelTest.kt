@@ -12,6 +12,7 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
+import jp.speakbuddy.edisonandroidexercise.domain.use_case.SearchSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
 import jp.speakbuddy.edisonandroidexercise.presentation.commons.TheResult
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -39,6 +39,7 @@ class FactViewModelTest {
     private lateinit var getSavedFactsUseCase: GetSavedFactsUseCase
     private lateinit var getQuizUseCase: GetQuizUseCase
     private lateinit var getLatestFactUseCase: GetLatestFactUseCase
+    private lateinit var searchSavedFactsUseCase: SearchSavedFactsUseCase
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -52,6 +53,7 @@ class FactViewModelTest {
         getSavedFactsUseCase = mockk()
         getQuizUseCase = mockk()
         getLatestFactUseCase = mockk()
+        searchSavedFactsUseCase = mockk()
 
         viewModel = FactViewModel(
             getFactUseCase,
@@ -60,6 +62,7 @@ class FactViewModelTest {
             getSavedFactsUseCase,
             getQuizUseCase,
             getLatestFactUseCase,
+            searchSavedFactsUseCase,
             testDispatcher
         )
     }

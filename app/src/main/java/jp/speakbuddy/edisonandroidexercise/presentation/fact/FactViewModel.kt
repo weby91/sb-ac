@@ -11,6 +11,7 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
+import jp.speakbuddy.edisonandroidexercise.domain.use_case.SearchSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
 import jp.speakbuddy.edisonandroidexercise.presentation.commons.TheResult
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,6 +31,7 @@ class FactViewModel @Inject constructor(
     private val getSavedFactsUseCase: GetSavedFactsUseCase,
     private val getQuizUseCase: GetQuizUseCase,
     private val getLatestFactUseCase: GetLatestFactUseCase,
+    private val searchSavedFactsUseCase: SearchSavedFactsUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
     internal var showTranslation = true
@@ -163,6 +165,10 @@ class FactViewModel @Inject constructor(
 
     fun setSelectedLanguage(language: String) {
         _selectedLanguage.value = language
+    }
+
+    fun searchSavedFacts(query: String): Flow<PagingData<Fact>> {
+        return searchSavedFactsUseCase(query)
     }
 
     private val _quizState = MutableStateFlow<TheResult<Quiz>>(TheResult.Loading)

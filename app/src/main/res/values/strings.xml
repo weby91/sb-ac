@@ -13,4 +13,10 @@
     <string name="quick_quiz">Quick Quiz</string>
     <string name="submit">Submit</string>
     <string name="failed_to_load_quiz">Failed to load quiz: %s</string>
+    <string name="saved_facts">Saved Facts</string>
+    <string name="back">Back</string>
+    <string name="search_facts">Search facts...</string>
+    <string name="search">Search</string>
+    <string name="clear_search">Clear search</string>
+    <string name="fact_number">Fact #%d</string>
 </resources>

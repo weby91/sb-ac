@@ -1,10 +1,6 @@
 package jp.speakbuddy.edisonandroidexercise.data
 
 import FactPagingSource
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.map
 import androidx.paging.PagingSource
 import jp.speakbuddy.edisonandroidexercise.data.local.FactDao
 import jp.speakbuddy.edisonandroidexercise.data.local.FactEntity
@@ -49,5 +45,10 @@ class FactStorage @Inject constructor(
         val originalSource: PagingSource<Int, FactEntity> = factDao.getSavedFacts()
         val factPagingSource: PagingSource<Int, Fact> = FactPagingSource(originalSource)
         return factPagingSource
+    }
+
+    fun searchSavedFacts(query: String): PagingSource<Int, Fact> {
+        val originalSource: PagingSource<Int, FactEntity> = factDao.searchSavedFacts(query)
+        return FactPagingSource(originalSource)
     }
 }

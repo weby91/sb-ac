@@ -1,5 +1,6 @@
 package jp.speakbuddy.edisonandroidexercise.presentation.fact
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,11 +8,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,14 +24,25 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
 import jp.speakbuddy.edisonandroidexercise.domain.model.Fact
+import androidx.compose.ui.res.stringResource
+import jp.speakbuddy.edisonandroidexercise.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,34 +50,50 @@ fun SavedFactsScreen(
     viewModel: FactViewModel,
     onBackPressed: () -> Unit
 ) {
-    val savedFacts = viewModel.getSavedFacts().collectAsLazyPagingItems()
+    var searchQuery by remember { mutableStateOf("") }
+    val savedFacts = viewModel.searchSavedFacts(searchQuery).collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Saved Facts") },
+                title = { Text(stringResource(R.string.saved_facts)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(paddingValues)
         ) {
-            items(
-                count = savedFacts.itemCount,
-                key = { index -> savedFacts[index]?.id ?: index }
-            ) { index ->
-                val fact = savedFacts[index]
-                fact?.let {
-                    SavedFactItem(fact = it, factNumber = savedFacts.itemCount - index)
+            SearchBar(
+                query = searchQuery,
+                onQueryChange = { 
+                    searchQuery = it
+                    viewModel.searchSavedFacts(it)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(
+                    count = savedFacts.itemCount,
+                    key = { index -> savedFacts[index]?.id ?: index }
+                ) { index ->
+                    val fact = savedFacts[index]
+                    fact?.let {
+                        SavedFactItem(fact = it, factNumber = savedFacts.itemCount - index)
+                    }
                 }
             }
         }
@@ -87,7 +118,7 @@ fun SavedFactItem(fact: Fact, factNumber: Int) {
                 .padding(20.dp)
         ) {
             Text(
-                text = "Fact #$factNumber",
+                text = stringResource(R.string.fact_number, factNumber),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -101,4 +132,52 @@ fun SavedFactItem(fact: Fact, factNumber: Int) {
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier
+            .heightIn(min = 56.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(28.dp))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(28.dp)
+            ),
+        placeholder = { Text(stringResource(R.string.search_facts)) },
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = stringResource(R.string.search),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.clear_search),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(28.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    )
 }

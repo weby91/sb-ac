@@ -24,12 +24,13 @@ import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetQuizUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.SaveFactUseCase
+import jp.speakbuddy.edisonandroidexercise.domain.use_case.SearchSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.domain.use_case.TranslateUseCase
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -141,5 +142,11 @@ object AppModule {
     @Singleton
     fun provideCoroutineDispatcher(): CoroutineDispatcher {
         return Dispatchers.Default
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchSavedFactsUseCase(repository: FactRepository): SearchSavedFactsUseCase {
+        return SearchSavedFactsUseCase(repository)
     }
 }

@@ -17,4 +17,7 @@ interface FactDao {
 
     @Query("SELECT * FROM facts ORDER BY id DESC")
     fun getSavedFacts(): PagingSource<Int, FactEntity>
+
+    @Query("SELECT * FROM facts WHERE fact LIKE '%' || :query || '%' ORDER BY id DESC")
+    fun searchSavedFacts(query: String): PagingSource<Int, FactEntity>
 }

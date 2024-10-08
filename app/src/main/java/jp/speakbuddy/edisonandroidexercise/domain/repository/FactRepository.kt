@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
  * Implementations of this interface should handle the data source logic,
  * whether it be from a local database, a remote API, or any other data source.
  */
-    interface FactRepository {
+interface FactRepository {
     /**
      * Retrieves a single fact from the data source.
      *
@@ -40,4 +40,12 @@ import kotlinx.coroutines.flow.Flow
      * @return a paging source of facts
      */
     fun getSavedFacts(): Flow<PagingData<Fact>>
+
+    /**
+     * Retrieves saved facts as a paging source, filtered by the given query.
+     *
+     * @param query the search query to filter facts
+     * @return a paging source of facts matching the query
+     */
+    fun searchSavedFacts(query: String): Flow<PagingData<Fact>>
 }

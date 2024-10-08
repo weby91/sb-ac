@@ -3,7 +3,6 @@ package jp.speakbuddy.edisonandroidexercise.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import androidx.paging.map
 import jp.speakbuddy.edisonandroidexercise.data.FactStorage
 import jp.speakbuddy.edisonandroidexercise.data.remote.FactApi
@@ -43,6 +42,21 @@ class FactRepositoryImpl @Inject constructor(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { factStorage.getSavedFacts() }
+        ).flow
+            .map { pagingData ->
+                pagingData.map { factEntity ->
+                    Fact(factEntity.id, factEntity.text, factEntity.length)
+                }
+            }
+    }
+
+    override fun searchSavedFacts(query: String): Flow<PagingData<Fact>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { factStorage.searchSavedFacts(query) }
         ).flow
             .map { pagingData ->
                 pagingData.map { factEntity ->
