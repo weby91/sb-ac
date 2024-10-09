@@ -1,10 +1,35 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.4.0" apply false
-    id("com.android.library") version "8.4.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
-    id("com.google.dagger.hilt.android") version "2.44.2" apply false
-    id("com.google.protobuf") version "0.9.4" apply false
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.protobuf) apply false
+    alias(libs.plugins.android.junit5) apply false
 
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.android.gradlePlugin)
+        classpath(libs.kotlin.gradlePlugin)
+        classpath(libs.hilt.android.gradlePlugin)
+    }
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.layout.buildDirectory)
+}
+
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            force(libs.androidx.paging.runtime)
+            force(libs.androidx.paging.common)
+        }
+    }
 }
