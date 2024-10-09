@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt)
     kotlin("kapt")
     jacoco
+    id("de.mannodermaus.android-junit5")
 }
 
 android {
@@ -26,10 +27,13 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         debug {
-            isTestCoverageEnabled = true 
+            isTestCoverageEnabled = true
         }
     }
     compileOptions {
@@ -48,7 +52,12 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes.add("/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}")
+        }
+    }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
         }
     }
 }
@@ -60,11 +69,17 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":ui"))
     implementation(libs.ar.core)
+    implementation(libs.androidx.navigation.testing)
 
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
+    testImplementation(libs.junit.vintage.engine)
+
     testImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -89,6 +104,7 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.robolectric)
@@ -110,6 +126,50 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.kotlinx.coroutines.test)
 
+    // AndroidX Test
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
+    // Compose Testing
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
+
+    androidTestImplementation(libs.mockk)
+
+    // JUnit 5
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
+    // JUnit 4 (for backwards compatibility)
+    testImplementation(libs.junit.vintage.engine)
+
+    implementation(libs.android.junit5)
+    implementation(libs.junit.jupiter.api)
+    implementation(libs.junit.jupiter.engine)
+    implementation(libs.junit.jupiter.params)
+    implementation(libs.junit.vintage.engine)
+
+
+// JUnit 5
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    androidTestImplementation(libs.junit.jupiter.api)
+    androidTestRuntimeOnly(libs.junit.jupiter.engine)
+
+    // AndroidX Test Core library
+    androidTestImplementation(libs.androidx.test.core)
+
+    // AndroidX Test Runner
+    androidTestImplementation(libs.androidx.test.runner)
+
+    // AndroidX Test Rules
+    androidTestImplementation(libs.androidx.test.rules)
+
+    // Android JUnit 5 plugin
+    androidTestImplementation(libs.mannodermaus.junit5.core)
+    androidTestRuntimeOnly(libs.mannodermaus.junit5.runner)
 }
 
 // Add Jacoco configuration

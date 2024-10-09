@@ -78,6 +78,7 @@ class FactViewModel @Inject constructor(
         }
     }
 
+    // Fetches the latest fact or a new one if no latest fact is available
     internal suspend fun getLatestFactOrFetchNew() {
         _uiState.value = TheResult.Loading
         try {
@@ -103,6 +104,7 @@ class FactViewModel @Inject constructor(
         }
     }
 
+    // Updates the UI state with a new fact and its translation
     internal suspend fun updateUiStateWithFact(fact: Fact) {
         val translation = translateUseCase(
             text = fact.text,
@@ -123,6 +125,7 @@ class FactViewModel @Inject constructor(
         )
     }
 
+    // Fetches a new fact and updates the UI
     fun updateFact() {
         viewModelScope.launch(dispatcher) {
             _uiState.value = TheResult.Loading
@@ -136,6 +139,7 @@ class FactViewModel @Inject constructor(
         }
     }
 
+    // Updates the translation for the current fact
     internal fun updateFactWithTranslation() {
         val currentState = _uiState.value
         if (currentState is TheResult.Success) {
@@ -164,6 +168,7 @@ class FactViewModel @Inject constructor(
         }
     }
 
+    // Sets the source and target languages for translation
     fun setLanguages(source: String, target: String) {
         viewModelScope.launch {
             sourceLanguage = getLanguageCode(source)
@@ -172,22 +177,27 @@ class FactViewModel @Inject constructor(
         }
     }
 
+    // Returns a map of language names to their flag codes
     fun getFlagCodes(): Map<String, String> {
         return languageData.mapValues { it.value.second }
     }
 
+    // Helper function to get the language code from a language name
     private fun getLanguageCode(language: String): String {
         return languageData[language]?.first ?: "en"
     }
 
+    // Returns a Flow of saved facts for pagination
     fun getSavedFacts(): Flow<PagingData<Fact>> {
         return getSavedFactsUseCase()
     }
 
+    // Sets the currently selected language
     fun setSelectedLanguage(language: String) {
         _selectedLanguage.value = language
     }
 
+    // Searches saved facts based on a query
     fun searchSavedFacts(query: String): Flow<PagingData<Fact>> {
         return searchSavedFactsUseCase(query)
     }
@@ -195,6 +205,7 @@ class FactViewModel @Inject constructor(
     private val _quizState = MutableStateFlow<TheResult<Quiz>>(TheResult.Loading)
     val quizState: StateFlow<TheResult<Quiz>> = _quizState.asStateFlow()
 
+    // Fetches a quiz based on a given fact
     fun getQuiz(fact: String) {
         viewModelScope.launch {
             _quizState.value = TheResult.Loading
@@ -208,6 +219,7 @@ class FactViewModel @Inject constructor(
     }
 }
 
+// Data class representing the UI state for a fact
 data class FactUiState(
     val fact: String = "",
     val showLength: Boolean = false,

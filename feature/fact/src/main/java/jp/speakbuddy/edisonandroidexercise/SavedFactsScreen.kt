@@ -1,5 +1,4 @@
 package jp.speakbuddy.edisonandroidexercise
-import jp.speakbuddy.edisonandroidexercise.feature.fact.R as FactR
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -36,12 +35,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.compose.ui.res.stringResource
 import jp.speakbuddy.edisonandroidexercise.model.Fact
+import jp.speakbuddy.edisonandroidexercise.feature.fact.R as FactR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,11 +49,14 @@ fun SavedFactsScreen(
     viewModel: FactViewModel,
     onBackPressed: () -> Unit
 ) {
+    // State for the search query
     var searchQuery by remember { mutableStateOf("") }
+    // Collect saved facts as lazy paging items
     val savedFacts = viewModel.searchSavedFacts(searchQuery).collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
+            // Top app bar with title and back button
             TopAppBar(
                 title = { Text(stringResource(FactR.string.saved_facts)) },
                 navigationIcon = {
@@ -69,6 +72,7 @@ fun SavedFactsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Search bar for filtering saved facts
             SearchBar(
                 query = searchQuery,
                 onQueryChange = { 
@@ -80,6 +84,7 @@ fun SavedFactsScreen(
                     .padding(16.dp)
             )
 
+            // LazyColumn to display saved facts
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
@@ -101,6 +106,7 @@ fun SavedFactsScreen(
 
 @Composable
 fun SavedFactItem(fact: Fact, factNumber: Int) {
+    // Card to display individual saved fact
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,6 +122,7 @@ fun SavedFactItem(fact: Fact, factNumber: Int) {
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
+            // Display fact number
             Text(
                 text = stringResource(FactR.string.fact_number, factNumber),
                 style = MaterialTheme.typography.titleMedium,
@@ -123,6 +130,7 @@ fun SavedFactItem(fact: Fact, factNumber: Int) {
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(12.dp))
+            // Display fact text
             Text(
                 text = fact.text,
                 style = MaterialTheme.typography.bodyLarge,
@@ -140,6 +148,7 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Custom search bar using TextField
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -154,6 +163,7 @@ fun SearchBar(
             ),
         placeholder = { Text(stringResource(FactR.string.search_facts)) },
         leadingIcon = {
+            // Search icon
             Icon(
                 Icons.Default.Search,
                 contentDescription = stringResource(FactR.string.search),
@@ -161,6 +171,7 @@ fun SearchBar(
             )
         },
         trailingIcon = {
+            // Clear button (only shown when query is not empty)
             if (query.isNotEmpty()) {
                 IconButton(onClick = { onQueryChange("") }) {
                     Icon(

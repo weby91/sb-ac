@@ -75,10 +75,11 @@ fun FactScreen(
     viewModel: FactViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    // Collect UI state and selected language from ViewModel
     val uiState by viewModel.uiState.collectAsState()
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
 
-    // Move showTranslation state to this level
+    // State to control translation visibility
     var showTranslation by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -86,6 +87,7 @@ fun FactScreen(
             CenterAlignedTopAppBar(
                 title = { },
                 actions = {
+                    // Language selector in the center of the top bar
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
@@ -102,6 +104,7 @@ fun FactScreen(
                     }
                 },
                 navigationIcon = {
+                    // Navigation icon to go to saved facts screen
                     IconButton(onClick = { navController.navigate("savedFacts") }) {
                         Icon(Icons.Default.List, contentDescription = "Saved Facts")
                     }
@@ -114,6 +117,7 @@ fun FactScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Display content based on UI state
             when (val state = uiState) {
                 is TheResult.Loading -> LoadingContent()
                 is TheResult.Success -> StoryContent(
@@ -122,7 +126,6 @@ fun FactScreen(
                     showTranslation,
                     onToggleTranslation = { showTranslation = !showTranslation }
                 )
-
                 is TheResult.Error -> ErrorContent(state.message)
             }
         }
@@ -146,6 +149,7 @@ fun StoryContent(
     showTranslation: Boolean,
     onToggleTranslation: () -> Unit
 ) {
+    // State to control quiz visibility
     var showQuiz by remember { mutableStateOf(false) }
 
     LazyColumn(
@@ -153,9 +157,11 @@ fun StoryContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Display the fact card
         item {
             StoryCard(uiState, true, uiState.targetLanguage) // Always show translation
         }
+        // Button to start the quiz
         item {
             Button(
                 onClick = { showQuiz = true },
@@ -167,6 +173,7 @@ fun StoryContent(
                 Text(stringResource(FactR.string.take_quiz))
             }
         }
+        // Display quiz section if showQuiz is true
         if (showQuiz) {
             item {
                 QuizSection(
@@ -176,6 +183,7 @@ fun StoryContent(
                 )
             }
         }
+        // Button to get next fact
         item {
             Button(
                 onClick = { viewModel.updateFact() },
@@ -207,6 +215,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
+            // Display fact of the day title
             Text(
                 text = stringResource(FactR.string.fact_of_the_day),
                 style = MaterialTheme.typography.titleMedium,
@@ -214,12 +223,14 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(12.dp))
+            // Display the fact
             Text(
                 text = uiState.fact,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
                 lineHeight = 24.sp
             )
+            // Display fact length if showLength is true
             if (uiState.showLength) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -228,6 +239,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
+            // Display multiple cats info if showMultipleCats is true
             if (uiState.showMultipleCats) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -238,11 +250,12 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                 )
             }
 
-            // Remove the if (showTranslation) check and always show the translation
+            // Always show the translation
             Spacer(modifier = Modifier.height(16.dp))
             Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Display translation language and text
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
@@ -266,6 +279,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                 lineHeight = 22.sp
             )
 
+            // Display multiple cats info box if showMultipleCats is true
             if (uiState.showMultipleCats) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -390,11 +404,14 @@ fun SimpleLanguageDropdown(
 
 @Composable
 fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Unit) {
+    // Collect quiz state from ViewModel
     val quizState by viewModel.quizState.collectAsState()
+    // State for selected option and quiz result
     var selectedOption by remember { mutableStateOf<Int?>(null) }
     var showResult by remember { mutableStateOf(false) }
     var isCorrect by remember { mutableStateOf(false) }
 
+    // Get quiz when fact changes
     LaunchedEffect(fact) {
         viewModel.getQuiz(fact)
     }
@@ -414,6 +431,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
+            // Display quiz title
             Text(
                 text = stringResource(FactR.string.quick_quiz),
                 style = MaterialTheme.typography.titleMedium,
@@ -422,14 +440,17 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
             )
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Display quiz content based on quiz state
             when (val state = quizState) {
                 is TheResult.Loading -> {
+                    // Show loading indicator
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
                 is TheResult.Success -> {
                     val quiz = state.data
+                    // Display quiz question
                     Text(
                         text = quiz.question,
                         style = MaterialTheme.typography.bodyLarge,
@@ -438,12 +459,14 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     
+                    // Display quiz options
                     QuizOptions(
                         options = quiz.options,
                         selectedOption = selectedOption ?: -1,
                         onOptionSelected = { selectedOption = it }
                     )
                     
+                    // Show submit button when result is not shown
                     AnimatedVisibility(
                         visible = !showResult,
                         enter = fadeIn(),
@@ -472,6 +495,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                         }
                     }
 
+                    // Show result animation when result is available
                     AnimatedVisibility(
                         visible = showResult,
                         enter = expandVertically() + fadeIn(),
@@ -485,6 +509,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                     }
                 }
                 is TheResult.Error -> {
+                    // Display error message
                     Text(
                         text = stringResource(FactR.string.failed_to_load_quiz, state.message),
                         color = MaterialTheme.colorScheme.error
@@ -508,7 +533,7 @@ private fun QuizOptions(
             onSelect = { onOptionSelected(index) }
         )
         if (index < options.lastIndex) {
-            Spacer(modifier = Modifier.height(4.dp)) // Reduced from 8.dp to 4.dp
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -533,7 +558,7 @@ fun QuizOption(
     ) {
         Row(
             modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp), // Reduced vertical padding from 16.dp to 8.dp
+                .padding(vertical = 8.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(

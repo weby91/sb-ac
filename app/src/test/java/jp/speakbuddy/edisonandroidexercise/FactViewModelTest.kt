@@ -7,29 +7,22 @@ import io.mockk.mockk
 import jp.speakbuddy.edisonandroidexercise.model.Fact
 import jp.speakbuddy.edisonandroidexercise.model.Quiz
 import jp.speakbuddy.edisonandroidexercise.model.Translation
-import jp.speakbuddy.edisonandroidexercise.use_case.GetFactUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.GetLatestFactUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.GetQuizUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.GetSavedFactsUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.SaveFactUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.SearchSavedFactsUseCase
-import jp.speakbuddy.edisonandroidexercise.use_case.TranslateUseCase
+import jp.speakbuddy.edisonandroidexercise.use_case.*
 import jp.speakbuddy.edisonandroidexercise.commons.TheResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.Test
-import org.junit.Before
-import org.junit.After
+import kotlinx.coroutines.test.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
+@ExtendWith(MainDispatcherExtension::class)
 class FactViewModelTest {
 
     private lateinit var viewModel: FactViewModel
@@ -43,7 +36,7 @@ class FactViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
@@ -69,7 +62,7 @@ class FactViewModelTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
     }
