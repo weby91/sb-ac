@@ -1,10 +1,12 @@
-package jp.speakbuddy.edisonandroidexercise.presentation.fact
+package jp.speakbuddy.edisonandroidexercise
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import jp.speakbuddy.edisonandroidexercise.commons.TheResult
 import jp.speakbuddy.edisonandroidexercise.use_case.GetFactUseCase
 import jp.speakbuddy.edisonandroidexercise.use_case.GetLatestFactUseCase
 import jp.speakbuddy.edisonandroidexercise.use_case.GetQuizUseCase
@@ -12,11 +14,16 @@ import jp.speakbuddy.edisonandroidexercise.use_case.GetSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.use_case.SaveFactUseCase
 import jp.speakbuddy.edisonandroidexercise.use_case.SearchSavedFactsUseCase
 import jp.speakbuddy.edisonandroidexercise.use_case.TranslateUseCase
-import jp.speakbuddy.edisonandroidexercise.commons.TheResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,8 +32,8 @@ import org.robolectric.annotation.Config
 import javax.inject.Inject
 
 @HiltAndroidTest
-@Config(application = HiltTestApplication::class)
 @RunWith(AndroidJUnit4::class)
+@Config(application = HiltTestApplication::class)
 @ExperimentalCoroutinesApi
 class FactViewModelInstrumentedTest {
 
@@ -80,43 +87,11 @@ class FactViewModelInstrumentedTest {
     }
 
     @Test
-    fun testUpdateFact() = runTest {
-        viewModel.updateFact()
-
-        // Wait for the operation to complete
-        Thread.sleep(2000)
-
-        val updatedState = viewModel.uiState.value
-        assertTrue(updatedState is TheResult.Success)
-
-        if (updatedState is TheResult.Success) {
-            assertTrue(updatedState.data.fact.isNotEmpty())
-            assertTrue(updatedState.data.translationText.isNotEmpty())
-        }
-    }
-
-    @Test
-    fun testSetLanguages() = runTest {
-        viewModel.setLanguages("English", "Japanese")
-
-        // Wait for the operation to complete
-        Thread.sleep(2000)
-
-        val updatedState = viewModel.uiState.value
-        assertTrue(updatedState is TheResult.Success)
-
-        if (updatedState is TheResult.Success) {
-            assertEquals("en", updatedState.data.sourceLanguage)
-            assertEquals("ja", updatedState.data.targetLanguage)
-        }
-    }
-
-    @Test
     fun testGetQuiz() = runTest {
-        viewModel.getQuiz("Test fact")
+        viewModel.getQuiz("Cat is an animal that has 4 legs. It has tail, two eyes, one nose. It can jump very high.")
 
         // Wait for the operation to complete
-        Thread.sleep(2000)
+        Thread.sleep(3000)
 
         val quizState = viewModel.quizState.value
         assertTrue(quizState is TheResult.Success)

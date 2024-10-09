@@ -77,6 +77,7 @@ room-testing = { group = "androidx.room", name = "room-testing", version.ref = "
 paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
 
 
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

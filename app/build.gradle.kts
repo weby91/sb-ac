@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    kotlin("kapt")
 }
 
 android {
@@ -35,6 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         compose = true
     }
@@ -54,6 +55,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":domain"))
     implementation(project(":ui"))
+    implementation(libs.ar.core)
 
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
@@ -86,11 +88,15 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.robolectric)
+    androidTestImplementation(libs.robolectric)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.kotlin.test.junit)
 
     // Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.compiler)
+    testImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.android.compiler)
 
     // Room testing
     androidTestImplementation(libs.room.testing)
@@ -99,4 +105,5 @@ dependencies {
     // Coroutine testing
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+
 }

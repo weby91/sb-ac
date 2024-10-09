@@ -1,4 +1,4 @@
-package jp.speakbuddy.edisonandroidexercise.presentation.fact
+package jp.speakbuddy.edisonandroidexercise
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
