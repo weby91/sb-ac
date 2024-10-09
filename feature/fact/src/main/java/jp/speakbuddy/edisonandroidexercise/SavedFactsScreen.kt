@@ -1,4 +1,5 @@
 package jp.speakbuddy.edisonandroidexercise
+import jp.speakbuddy.edisonandroidexercise.feature.fact.R as FactR
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -54,10 +55,10 @@ fun SavedFactsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.saved_facts)) },
+                title = { Text(stringResource(FactR.string.saved_facts)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(FactR.string.back))
                     }
                 }
             )
@@ -116,7 +117,7 @@ fun SavedFactItem(fact: Fact, factNumber: Int) {
                 .padding(20.dp)
         ) {
             Text(
-                text = stringResource(R.string.fact_number, factNumber),
+                text = stringResource(FactR.string.fact_number, factNumber),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -151,11 +152,11 @@ fun SearchBar(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
                 shape = RoundedCornerShape(28.dp)
             ),
-        placeholder = { Text(stringResource(R.string.search_facts)) },
+        placeholder = { Text(stringResource(FactR.string.search_facts)) },
         leadingIcon = {
             Icon(
                 Icons.Default.Search,
-                contentDescription = stringResource(R.string.search),
+                contentDescription = stringResource(FactR.string.search),
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         },
@@ -164,7 +165,7 @@ fun SearchBar(
                 IconButton(onClick = { onQueryChange("") }) {
                     Icon(
                         Icons.Default.Clear,
-                        contentDescription = stringResource(R.string.clear_search),
+                        contentDescription = stringResource(FactR.string.clear_search),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }

@@ -82,7 +82,22 @@ class FactViewModel @Inject constructor(
         _uiState.value = TheResult.Loading
         try {
             val latestFact = getLatestFactUseCase()
-            latestFact.collect { fact -> updateUiStateWithFact(Fact(text = fact, id = 0, length = fact.length)) }
+            latestFact.collect { fact ->
+                if (fact.isNotEmpty()) {
+                    updateUiStateWithFact(
+                        Fact(
+                            text = fact,
+                            id = 0,
+                            length = fact.length
+                        )
+                    )
+                } else {
+                    // If latest fact is empty, fetch a new one
+                    val newFact = getFactUseCase()
+                    saveFactUseCase(newFact)
+                    updateUiStateWithFact(newFact)
+                }
+            }
         } catch (e: Exception) {
             _uiState.value = TheResult.Error("Failed to fetch fact: ${e.message}")
         }
@@ -91,20 +106,20 @@ class FactViewModel @Inject constructor(
     internal suspend fun updateUiStateWithFact(fact: Fact) {
         val translation = translateUseCase(
             text = fact.text,
-            targetLang = targetLanguage,
-            sourceLang = sourceLanguage
+            sourceLang = sourceLanguage, 
+            targetLang = targetLanguage 
         )
         _uiState.value = TheResult.Success(
             FactUiState(
-            fact = fact.text,
-            translationText = translation.translatedText,
-            showTranslation = showTranslation,
-            sourceLanguage = sourceLanguage,
-            targetLanguage = targetLanguage,
-            length = fact.length,
-            showLength = fact.length > 100,
-            showMultipleCats = fact.text.contains("cats")
-        )
+                fact = fact.text,
+                translationText = translation.translatedText,
+                showTranslation = showTranslation,
+                sourceLanguage = sourceLanguage,
+                targetLanguage = targetLanguage,
+                length = fact.length,
+                showLength = fact.length > 100,
+                showMultipleCats = fact.text.contains("cats")
+            )
         )
     }
 
@@ -124,22 +139,26 @@ class FactViewModel @Inject constructor(
     internal fun updateFactWithTranslation() {
         val currentState = _uiState.value
         if (currentState is TheResult.Success) {
-            viewModelScope.launch {
-                _uiState.value = TheResult.Loading
-                try {
-                    val translation = translateUseCase(
-                        text = currentState.data.fact,
-                        sourceLang = sourceLanguage,
-                        targetLang = targetLanguage
-                    )
-                    _uiState.value = TheResult.Success(currentState.data.copy(
-                        translationText = translation.translatedText,
-                        showTranslation = true,
-                        sourceLanguage = sourceLanguage,
-                        targetLanguage = targetLanguage
-                    ))
-                } catch (e: Exception) {
-                    _uiState.value = TheResult.Error("Failed to translate: ${e.message}")
+            if (currentState.data.fact.isNotEmpty()) {
+                viewModelScope.launch {
+                    _uiState.value = TheResult.Loading
+                    try {
+                        val translation = translateUseCase(
+                            text = currentState.data.fact,
+                            sourceLang = sourceLanguage,  // Changed order
+                            targetLang = targetLanguage   // Changed order
+                        )
+                        _uiState.value = TheResult.Success(
+                            currentState.data.copy(
+                                translationText = translation.translatedText,
+                                showTranslation = true,
+                                sourceLanguage = sourceLanguage,
+                                targetLanguage = targetLanguage
+                            )
+                        )
+                    } catch (e: Exception) {
+                        _uiState.value = TheResult.Error("Failed to translate: ${e.message}")
+                    }
                 }
             }
         }

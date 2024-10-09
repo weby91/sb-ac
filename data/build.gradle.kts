@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.hilt)
     kotlin("kapt")
 }
 
@@ -42,12 +41,14 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.okhttp3.logging.interceptor)
 
     // Room dependencies
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
     kapt(libs.room.compiler)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

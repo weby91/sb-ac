@@ -60,12 +60,6 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideCoroutineDispatcher(): CoroutineDispatcher {
-        return Dispatchers.Default
-    }
-
-    @Provides
-    @Singleton
     fun provideSearchSavedFactsUseCase(repository: FactRepository): SearchSavedFactsUseCase {
         return SearchSavedFactsUseCase(repository)
     }

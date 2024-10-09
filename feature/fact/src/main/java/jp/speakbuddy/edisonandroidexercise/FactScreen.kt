@@ -1,4 +1,5 @@
-package jp.speakbuddy.edisonandroidexercise.commons
+package jp.speakbuddy.edisonandroidexercise
+import jp.speakbuddy.edisonandroidexercise.feature.fact.R as FactR
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -163,7 +164,7 @@ fun StoryContent(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.take_quiz))
+                Text(stringResource(FactR.string.take_quiz))
             }
         }
         if (showQuiz) {
@@ -183,7 +184,7 @@ fun StoryContent(
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.next_story))
+                Text(stringResource(FactR.string.next_story))
             }
         }
     }
@@ -207,7 +208,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                 .padding(20.dp)
         ) {
             Text(
-                text = stringResource(R.string.fact_of_the_day),
+                text = stringResource(FactR.string.fact_of_the_day),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -222,7 +223,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
             if (uiState.showLength) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.length_characters, uiState.fact.length),
+                    text = stringResource(FactR.string.length_characters, uiState.fact.length),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
@@ -230,7 +231,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
             if (uiState.showMultipleCats) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.multiple_cats),
+                    text = stringResource(FactR.string.multiple_cats),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold
@@ -245,13 +246,13 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
-                    contentDescription = stringResource(R.string.translation),
+                    contentDescription = stringResource(FactR.string.translation),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(R.string.translation_language, selectedLanguage),
+                    text = stringResource(FactR.string.translation_language, selectedLanguage),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -285,7 +286,7 @@ fun StoryCard(uiState: FactUiState, showTranslation: Boolean, selectedLanguage: 
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = stringResource(R.string.multiple_cats),
+                        text = stringResource(FactR.string.multiple_cats),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -414,7 +415,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                 .padding(20.dp)
         ) {
             Text(
-                text = stringResource(R.string.quick_quiz),
+                text = stringResource(FactR.string.quick_quiz),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -463,11 +464,11 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(R.string.submit),
+                                contentDescription = stringResource(FactR.string.submit),
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.submit))
+                            Text(stringResource(FactR.string.submit))
                         }
                     }
 
@@ -485,7 +486,7 @@ fun QuizSection(fact: String, viewModel: FactViewModel, onQuizComplete: () -> Un
                 }
                 is TheResult.Error -> {
                     Text(
-                        text = stringResource(R.string.failed_to_load_quiz, state.message),
+                        text = stringResource(FactR.string.failed_to_load_quiz, state.message),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -565,7 +566,7 @@ fun ResultAnimation(isCorrect: Boolean, onAnimationComplete: () -> Unit) {
     )
     
     val context = LocalContext.current
-    val soundResId = if (isCorrect) R.raw.raw_correct else R.raw.raw_wrong
+    val soundResId = if (isCorrect) FactR.raw.raw_correct else FactR.raw.raw_wrong
 
     DisposableEffect(isCorrect) {
         val mediaPlayer = MediaPlayer.create(context, soundResId)

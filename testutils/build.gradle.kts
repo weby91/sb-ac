@@ -47,19 +47,5 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     
-    // Test dependencies
-    implementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.test.manifest)
-    implementation(libs.junit)
-    implementation(libs.androidx.test.ext.junit)
-    implementation(libs.espresso.core)
-    
-    // Additional test dependencies
-    implementation(libs.junit.jupiter.api)
-    implementation(libs.mockk)
-    implementation(libs.kotlinx.coroutines.test)
-    implementation(libs.turbine)
-    implementation(libs.robolectric)
-    implementation(libs.androidx.arch.core.testing)
-    implementation(libs.kotlin.test.junit)
+
 }

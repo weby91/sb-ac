@@ -30,6 +30,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -38,9 +41,24 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideFactApi(): FactApi {
+    fun provideOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFactApi(okHttpClient: OkHttpClient): FactApi {
         return Retrofit.Builder()
             .baseUrl("https://catfact.ninja/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(FactApi::class.java)
@@ -48,9 +66,10 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideTranslationApi(): TranslationApi {
+    fun provideTranslationApi(okHttpClient: OkHttpClient): TranslationApi {
         return Retrofit.Builder()
             .baseUrl("https://api.jar-vis.com/api/v1/cron/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TranslationApi::class.java)
@@ -58,9 +77,10 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideQuizApi(): QuizApi {
+    fun provideQuizApi(okHttpClient: OkHttpClient): QuizApi {
         return Retrofit.Builder()
             .baseUrl("https://api-jarvis.jar-vis.com/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(QuizApi::class.java)
@@ -100,53 +120,5 @@ object DataModule {
     @Singleton
     fun provideQuizRepository(api: QuizApi): QuizRepository {
         return QuizRepositoryImpl(api)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetFactUseCase(repository: FactRepository): GetFactUseCase {
-        return GetFactUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSaveFactUseCase(repository: FactRepository): SaveFactUseCase {
-        return SaveFactUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetLatestFactUseCase(repository: FactRepository): GetLatestFactUseCase {
-        return GetLatestFactUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideTranslateUseCase(repository: TranslationRepository): TranslateUseCase {
-        return TranslateUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetSavedFactsUseCase(repository: FactRepository): GetSavedFactsUseCase {
-        return GetSavedFactsUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetQuizUseCase(repository: QuizRepository): GetQuizUseCase {
-        return GetQuizUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCoroutineDispatcher(): CoroutineDispatcher {
-        return Dispatchers.Default
-    }
-
-    @Provides
-    @Singleton
-    fun provideSearchSavedFactsUseCase(repository: FactRepository): SearchSavedFactsUseCase {
-        return SearchSavedFactsUseCase(repository)
     }
 }
